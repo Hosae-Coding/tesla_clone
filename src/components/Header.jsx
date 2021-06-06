@@ -21,6 +21,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
             <Link to="/">Model S</Link>
             <Link to="/">Model e</Link>
             <Link to="/">Model x</Link>
+            <Link to="/">Model y</Link>
             <Link to="/">Solar Roof</Link>
             <Link to="/">Solar Panels</Link>
          </div>
