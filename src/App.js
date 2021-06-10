@@ -1,6 +1,6 @@
 import Menu from './components/Menu';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
    BrowserRouter as Router,
@@ -12,12 +12,34 @@ import './App.css';
 import Header from './components/Header';
 import HeaderBlock from './components/HeaderBlock';
 import Login from './components/Login';
-import { selectUser } from './features/userSlice';
+import { login, logout, selectUser } from './features/userSlice';
 import Signup from './components/Signup';
+import TeslaAccount from './components/TeslaAccount';
+import { auth } from './firebase';
 
 function App() {
    const user = useSelector(selectUser);
    const [isMenuOpen, setIsMenuOpen] = useState(false);
+   const dispatch = useDispatch();
+
+   useEffect(() => {
+      auth.onAuthStateChanged((userAuth) => {
+         if (userAuth) {
+            //sign in
+            dispatch(
+               login({
+                  email: userAuth.email,
+                  uid: userAuth.uid,
+                  displayName: userAuth.displayName,
+               })
+            );
+         } else {
+            //sign out
+            dispatch(logout());
+         }
+      });
+   }, [dispatch]);
+
    return (
       <Router>
          <div className="App">
@@ -36,6 +58,19 @@ function App() {
                </Route>
                <Route exact path="/signup">
                   <Signup />
+               </Route>
+               <Route exact path="/teslaaccount">
+                  {!user ? (
+                     <Redirect to="/login" />
+                  ) : (
+                     <>
+                        <TeslaAccount
+                           isMenuOpen={isMenuOpen}
+                           setIsMenuOpen={setIsMenuOpen}
+                        />
+                        {isMenuOpen && <Menu />}
+                     </>
+                  )}
                </Route>
             </Switch>
          </div>
